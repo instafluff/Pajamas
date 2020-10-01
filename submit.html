@@ -1,0 +1,146 @@
+<html>
+    <head>
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+        <link href="https://fonts.googleapis.com/css?family=Fredoka+One|Open+Sans&display=swap" rel="stylesheet">
+
+        <title>Game Jame Pajama Playtests!</title>
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=UA-135113520-1"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'UA-135113520-1');
+        </script>
+      <!-- Required meta tags -->
+      <meta charset="utf-8">
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+        <script src="https://cdn.jsdelivr.net/npm/comfytwitch@latest/web/comfytwitch.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/comfy.js/dist/comfy.min.js"></script>
+        <style>
+        html, body {
+            font-family: "Fredoka One", "sans-serif";
+            color: #ffffff;
+            background-color: #333;
+        }
+        a, a:hover {
+            color: #ffa600;
+        }
+    	.translucent-purple-bg {
+    		background-color: rgba( 100, 65, 165, 0.5 );
+    		border-color: rgba( 100, 65, 165, 0.5 );
+    		color: #ccc;
+    	}
+        .btn-purple-outline {
+            background-color: #fff;
+            border-color: #fff;
+            color: #6441a5;
+        }
+        .btn-purple {
+            background-color: #6441a5;
+            border-color: #6441a5;
+            color: #fff;
+        }
+        .btn-primary {
+            background-color: #4C97FF;
+            border-color: #4C97FF;
+        }
+        .btn-warning {
+            background-color: #ffa600;
+            border-color: #ffa600;
+        }
+        .card {
+            background-color: #6441a5;
+            color: #fff;
+        }
+        .card-img-top {
+            width: 100%;
+            height: 25vw;
+            object-fit: cover;
+        }
+        .pre {
+            white-space: pre-wrap;
+        }
+        .card-body img {
+            width: 100%;
+        }
+        .card-body h1 {
+            font-size: 1.2rem;
+        }
+        .card-body h2 {
+            font-size: 1.0rem;
+        }
+        .card-body h3 {
+            font-size: 0.9rem;
+        }
+        .card-body h4 {
+            font-size: 0.8rem;
+        }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div id="login-group" class="py-2 float-right" hidden><button id="login" class="btn btn-purple center">Log In with <i class="fa fa-twitch"></i> Twitch</button></div><div id="profile-group" class="py-2 float-right" hidden><span><span id="username"></span> <img id="profile-image" class="rounded" src="" alt="Profile Image" height="38" width="38"></span> <button id="logout" class="btn btn-purple">Log Out</button></div>
+            <h1>Pajamas: Game Jam Playtests</h1>
+            <p class="text-warning">Play and review game jam submissions with everyone!</p>
+            <form>
+              <div class="form-group">
+                <label for="inputGameLink">Submit a Ludum Dare Game Link:</label>
+                <input type="text" class="form-control" id="inputGameLink" aria-describedby="inputLinkHelp" placeholder="">
+                <small id="inputLinkHelp" class="form-text text-muted">e.g. https://ldjam.com/events/ludum-dare/44/rainbow-rampage-twitch-overlay-game</small>
+              </div>
+              <button id="linkBtn" type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+        <!-- Optional JavaScript -->
+        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/showdown/dist/showdown.min.js"></script>
+        <script>
+            const apiUrl = "https://api.instafluff.tv:9999";
+            const params = new URLSearchParams( location.search );
+
+            const clientId = "wu7qd6tn0uc5n05u2tjy3snl20da76";
+            const baseUrl = window.location.origin + window.location.pathname;
+
+            ComfyTwitch.Check()
+            .then( async result => {
+                console.log( result );
+                if( result ) {
+                    // Logged In
+                    let user = await ComfyTwitch.GetUser( clientId, result.user_id );
+                    document.getElementById( "username" ).innerText = user.display_name;
+                    document.getElementById( "profile-image" ).src = user.profile_image_url;
+                    document.querySelector( "#login-group" ).setAttribute( "hidden", true );
+    				document.querySelector( "#profile-group" ).removeAttribute( "hidden" );
+                    document.querySelector( "#logout" ).addEventListener( "click", function() {
+                        ComfyTwitch.Logout();
+                        window.location.reload();
+                    });
+
+                    $( "#linkBtn" ).on( "click", async ( e ) => {
+                        e.preventDefault();
+                        let link = $( "#inputGameLink" ).val();
+                        // console.log( link );
+                        let submission = await fetch( `${apiUrl}/games/add?url=${link}` ).then( r => r.json() );
+                        console.log( submission );
+                        window.location.href = `game.html?game=${submission.key}`;
+                    });
+                }
+                else {
+                    // Logged Out
+                    document.querySelector( "#profile-group" ).setAttribute( "hidden", true );
+                    document.querySelector( "#login-group" ).removeAttribute( "hidden" );
+                    document.querySelector( "#login" ).addEventListener( "click", function() {
+                        ComfyTwitch.Login( clientId, baseUrl, [ "user:read:email" ] );
+                    });
+                }
+            });
+        </script>
+    </body>
+</html>

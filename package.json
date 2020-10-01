@@ -1,0 +1,34 @@
+{
+  "name": "pajamas",
+  "version": "1.0.0",
+  "description": "Game Jam Collections and Playtesting",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/instafluff/Pajamas.git"
+  },
+  "keywords": [
+    "Game",
+    "Development",
+    "Jam",
+    "Jams",
+    "Ludum",
+    "Dare",
+    "Design",
+    "Instafluff",
+    "ElysiaGriffin"
+  ],
+  "author": "Instafluff",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/instafluff/Pajamas/issues"
+  },
+  "homepage": "https://github.com/instafluff/Pajamas#readme",
+  "dependencies": {
+    "webwebweb": "^1.4.0"
+  },
+  "devDependencies": {}
+}

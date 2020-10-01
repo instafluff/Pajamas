@@ -1,0 +1,225 @@
+<html>
+    <head>
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+        <link href="https://fonts.googleapis.com/css?family=Fredoka+One|Open+Sans&display=swap" rel="stylesheet">
+
+        <title>Game Jame Pajama Playtests!</title>
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=UA-135113520-1"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'UA-135113520-1');
+        </script>
+      <!-- Required meta tags -->
+      <meta charset="utf-8">
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+        <script src="https://cdn.jsdelivr.net/npm/comfytwitch@latest/web/comfytwitch.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/comfy.js/dist/comfy.min.js"></script>
+        <style>
+        html, body {
+            font-family: "Fredoka One", "sans-serif";
+            color: #ffffff;
+            background-color: #333;
+        }
+        a, a:hover {
+            color: #ffa600;
+        }
+    	.translucent-purple-bg {
+    		background-color: rgba( 100, 65, 165, 0.5 );
+    		border-color: rgba( 100, 65, 165, 0.5 );
+    		color: #ccc;
+    	}
+        .btn-purple-outline {
+            background-color: #fff;
+            border-color: #fff;
+            color: #6441a5;
+        }
+        .btn-purple {
+            background-color: #6441a5;
+            border-color: #6441a5;
+            color: #fff;
+        }
+        .btn-primary {
+            background-color: #4C97FF;
+            border-color: #4C97FF;
+        }
+        .btn-warning {
+            background-color: #ffa600;
+            border-color: #ffa600;
+        }
+        .card {
+            background-color: #6441a5;
+            color: #fff;
+        }
+        .card-img-top {
+            width: 100%;
+            height: 25vw;
+            object-fit: cover;
+        }
+        .pre {
+            white-space: pre-wrap;
+        }
+        .card-body img {
+            width: 100%;
+        }
+        .card-body h1 {
+            font-size: 1.5rem;
+        }
+        .card-body h2 {
+            font-size: 1.0rem;
+        }
+        .card-body h3 {
+            font-size: 0.9rem;
+        }
+        .card-body h4 {
+            font-size: 0.8rem;
+        }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div id="login-group" class="py-2 float-right" hidden><button id="login" class="btn btn-purple center">Log In with <i class="fa fa-twitch"></i> Twitch</button></div><div id="profile-group" class="py-2 float-right" hidden><span><span id="username"></span> <img id="profile-image" class="rounded" src="" alt="Profile Image" height="38" width="38"></span> <button id="logout" class="btn btn-purple">Log Out</button></div>
+            <h1>Pajamas: Game Jam Playtests</h1>
+            <p class="text-warning">Play and review game jam submissions with everyone!</p>
+            <div id="game-info" class="row">
+            </div>
+        </div>
+        <!-- Optional JavaScript -->
+        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/showdown/dist/showdown.min.js"></script>
+        <script>
+            const apiUrl = "https://api.instafluff.tv:9999";
+            const params = new URLSearchParams( location.search );
+            const converter = new showdown.Converter( { emoji: true } );
+            let rating = -1;
+
+            async function rateGame( value, updateRating = true ) {
+                if( rating >= 0 ) {
+                    $( `#rate_${rating}` ).removeClass( "btn-danger" );
+                    $( `#rate_${rating}` ).addClass( "btn-secondary" );
+                }
+                rating = value;
+                $( `#rate_${rating}` ).removeClass( "btn-secondary" );
+                $( `#rate_${rating}` ).addClass( "btn-danger" );
+
+                if( updateRating ) {
+                    let review = await fetch( `${apiUrl}/games/rate?twitch=${ComfyTwitch.Token}&game=${params.get( "game" )}&stars=${rating}` ).then( r => r.json() );
+                    console.log( review );
+                }
+            }
+
+            (async () => {
+                if( params.get( "game" ) ) {
+                    // Get game info
+                    let game = await fetch( `${apiUrl}/games?game=${params.get( "game" )}` ).then( r => r.json() );
+                    $( "#game-info" ).append( `
+                        <div class="col-4 pb-4">
+                            <img class="img-fluid" src="${game.cover}" alt="${game.title}">
+                            <div class="card">
+                              <div class="card-body">
+                                <a href="${game.url}" target="_blank" class="btn btn-info">Open Ludum Dare Page</a>
+                                <br/><br/>
+                                Rate:
+                                <button id="rate_1" class="btn btn-secondary" onclick="rateGame(1)">1</button>
+                                <button id="rate_2" class="btn btn-secondary" onclick="rateGame(2)">2</button>
+                                <button id="rate_3" class="btn btn-secondary" onclick="rateGame(3)">3</button>
+                                <button id="rate_4" class="btn btn-secondary" onclick="rateGame(4)">4</button>
+                                <button id="rate_5" class="btn btn-secondary" onclick="rateGame(5)">5</button>
+                                <br/>
+                                <form>
+                                  <div class="form-group">
+                                    <label for="inputGameComment">Comment:</label>
+                                    <input type="text" class="form-control" id="inputGameComment" placeholder="">
+                                  </div>
+                                  <button id="rateBtn" type="submit" class="btn btn-primary">Submit</button>
+                                </form>
+                                <ul id="comments" class="list-unstyled">
+                                </ul>
+                              </div>
+                            </div>
+                        </div>
+                        <div class="col-8">
+                            <div class="card">
+                              <div class="card-body">
+                                <h1>${game.title}</h1>
+                                <h6 class="card-title">By <span class="text-warning">${game.authors.map( x => x.user ).join( ", " )}</span></h6>
+                                <h6>Rating: <span id="avg-rating">-</span> (<span id="total-rating">0</span>)</h6>
+                                <p class="card-text pre"><small>${converter.makeHtml( game.description.replaceAll( "///", "https://static.jam.vg/" ) )}</small></p>
+                              </div>
+                            </div>
+                        </div>
+                    ` );
+
+                    $( "#rateBtn" ).on( "click", async ( e ) => {
+                        e.preventDefault();
+                        let comment = $( "#inputGameComment" ).val();
+                        // console.log( link );
+                        let review = await fetch( `${apiUrl}/games/comment?twitch=${ComfyTwitch.Token}&game=${params.get( "game" )}&comment=${comment}` ).then( r => r.json() );
+                        console.log( review );
+                        // window.location.href = `game.html?game=${review.key}`;
+                    });
+
+                    // Get game ratings
+                    let ratings = await fetch( `${apiUrl}/games/ratings?game=${params.get( "game" )}` ).then( r => r.json() );
+                    console.log( ratings );
+
+                    // Get game comments
+                    let comments = await fetch( `${apiUrl}/games/comments?game=${params.get( "game" )}` ).then( r => r.json() );
+                    console.log( comments );
+                    comments.forEach( c => {
+                        if( !!c.comment ) {
+                            $( "#comments" ).append( `<li class="">"${c.comment}" -${c.user}</li>` );
+                        }
+                    });
+
+                    // Calculate full rating
+                    let ratingTotal = ratings.reduce( ( total, curr ) => total + curr, 0 );
+                    $( "#avg-rating" ).text( ( ratingTotal / ratings.length ).toFixed( 2 ) );
+                    $( "#total-rating" ).text( ratings.length );
+                }
+            })();
+
+            const clientId = "wu7qd6tn0uc5n05u2tjy3snl20da76";
+            const baseUrl = window.location.origin + window.location.pathname;
+
+            ComfyTwitch.Check()
+            .then( async result => {
+                console.log( result );
+                if( result ) {
+                    // Logged In
+                    let user = await ComfyTwitch.GetUser( clientId, result.user_id );
+                    document.getElementById( "username" ).innerText = user.display_name;
+                    document.getElementById( "profile-image" ).src = user.profile_image_url;
+                    document.querySelector( "#login-group" ).setAttribute( "hidden", true );
+    				document.querySelector( "#profile-group" ).removeAttribute( "hidden" );
+                    document.querySelector( "#logout" ).addEventListener( "click", function() {
+                        ComfyTwitch.Logout();
+                        window.location.reload();
+                    });
+
+                    // Get my game rating and comment
+                    let myreview = await fetch( `${apiUrl}/games/myreview?twitch=${ComfyTwitch.Token}&game=${params.get( "game" )}` ).then( r => r.json() );
+                    console.log( myreview );
+                    rateGame( myreview.stars, false );
+                    $( "#inputGameComment" ).val( myreview.comment );
+                }
+                else {
+                    // Logged Out
+                    document.querySelector( "#profile-group" ).setAttribute( "hidden", true );
+                    document.querySelector( "#login-group" ).removeAttribute( "hidden" );
+                    document.querySelector( "#login" ).addEventListener( "click", function() {
+                        ComfyTwitch.Login( clientId, baseUrl, [ "user:read:email" ] );
+                    });
+                }
+            });
+        </script>
+    </body>
+</html>
