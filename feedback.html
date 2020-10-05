@@ -37,9 +37,6 @@
     		border-color: rgba( 100, 65, 165, 0.5 );
     		color: #ccc;
     	}
-        .text-purple {
-            color: #FF4F63;
-        }
         .btn-purple-outline {
             background-color: #fff;
             border-color: #fff;
@@ -91,18 +88,13 @@
         <div class="container">
             <div id="login-group" class="py-2 float-right" hidden><button id="login" class="btn btn-purple center">Log In with <i class="fa fa-twitch"></i> Twitch</button></div><div id="profile-group" class="py-2 float-right" hidden><span><span id="username"></span> <img id="profile-image" class="rounded" src="" alt="Profile Image" height="38" width="38"></span> <button id="logout" class="btn btn-purple">Log Out</button></div>
             <h1><a href="index.html">Pajamas Playtests</a></h1>
+            <!-- <input type="text" class="float-right" id="game-search" placeholder="Search Games"> -->
             <a href="feedback.html" class="float-right btn btn-info btn-sm ml-2">Site Feedback</a>
             <a href="submit.html" class="float-right btn btn-primary btn-sm">Add Your Game Jam Submission</a>
             <p class="text-warning">Play and review game jam submissions with everyone!</p>
-            <form>
-              <div class="form-group">
-                <label for="inputGameLink">Submit a Ludum Dare Game Link:</label>
-                <input type="text" class="form-control" id="inputGameLink" aria-describedby="inputLinkHelp" placeholder="">
-                <small id="inputLinkHelp" class="form-text text-muted">e.g. https://ldjam.com/events/ludum-dare/44/rainbow-rampage-twitch-overlay-game</small>
-                <small id="inputLinkError" class="form-text text-purple"></small>
-              </div>
-              <button id="linkBtn" type="submit" class="btn btn-primary">Submit</button>
-            </form>
+            <div class="row">
+                <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSdXkw1qytC8M5yAQkKPUA3xIRiik_4OSi9fRGjbAueqB0ug6g/viewform?embedded=true" width="640" height="371" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+            </div>
         </div>
         <!-- Optional JavaScript -->
         <!-- jQuery first, then Popper.js, then Bootstrap JS -->
@@ -130,20 +122,6 @@
                     document.querySelector( "#logout" ).addEventListener( "click", function() {
                         ComfyTwitch.Logout();
                         window.location.reload();
-                    });
-
-                    $( "#linkBtn" ).on( "click", async ( e ) => {
-                        e.preventDefault();
-                        let link = $( "#inputGameLink" ).val();
-                        // console.log( link );
-                        let submission = await fetch( `${apiUrl}/games/add?url=${link}` ).then( r => r.json() );
-                        console.log( submission );
-                        if( submission.key ) {
-                            window.location.href = `game.html?game=${submission.key}`;
-                        }
-                        else {
-                            document.getElementById( "inputLinkError" ).innerText = "OOPS, that link didn't work! Try another link.";
-                        }
                     });
                 }
                 else {
