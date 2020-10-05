@@ -37,6 +37,9 @@
     		border-color: rgba( 100, 65, 165, 0.5 );
     		color: #ccc;
     	}
+        .text-purple {
+            color: #FF4F63;
+        }
         .btn-purple-outline {
             background-color: #fff;
             border-color: #fff;
@@ -94,6 +97,7 @@
                 <label for="inputGameLink">Submit a Ludum Dare Game Link:</label>
                 <input type="text" class="form-control" id="inputGameLink" aria-describedby="inputLinkHelp" placeholder="">
                 <small id="inputLinkHelp" class="form-text text-muted">e.g. https://ldjam.com/events/ludum-dare/44/rainbow-rampage-twitch-overlay-game</small>
+                <small id="inputLinkError" class="form-text text-purple"></small>
               </div>
               <button id="linkBtn" type="submit" class="btn btn-primary">Submit</button>
             </form>
@@ -132,7 +136,12 @@
                         // console.log( link );
                         let submission = await fetch( `${apiUrl}/games/add?url=${link}` ).then( r => r.json() );
                         console.log( submission );
-                        window.location.href = `game.html?game=${submission.key}`;
+                        if( submission.key ) {
+                            window.location.href = `game.html?game=${submission.key}`;
+                        }
+                        else {
+                            document.getElementById( "inputLinkError" ).innerText = "OOPS, that link didn't work! Try another link.";
+                        }
                     });
                 }
                 else {
