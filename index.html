@@ -92,6 +92,12 @@
             <a href="feedback.html" class="float-right btn btn-info btn-sm ml-2">Site Feedback</a>
             <a href="submit.html" class="float-right btn btn-primary btn-sm">Add Your Game Jam Submission</a>
             <p class="text-warning">Play and review game jam submissions with everyone!</p>
+            <form class="input-group">
+              <input id="search-text" type="text" class="" placeholder="Search" aria-label="Search" aria-describedby="button-search">
+              <div class="input-group-append">
+                <button class="btn btn-secondary" type="submit" id="button-search">Search</button>
+              </div>
+            </form>
             <div id="entries" class="row">
             </div>
         </div>
@@ -106,8 +112,19 @@
             const params = new URLSearchParams( location.search );
             const converter = new showdown.Converter( { emoji: true } );
 
+            $( "#button-search" ).on( "click", ( e ) => {
+                e.preventDefault();
+                window.location.href = `?search=${$("#search-text").val()}`;
+            });
+
             (async () => {
-                let games = await fetch( `${apiUrl}/games` ).then( r => r.json() );
+                let games = [];
+                if( params.get( "search" ) ) {
+                    games = await fetch( `${apiUrl}/games/search?text=${params.get( "search" )}` ).then( r => r.json() );
+                }
+                else {
+                    games = await fetch( `${apiUrl}/games` ).then( r => r.json() );
+                }
                 let gameItems = [];
                 games.forEach( ( game, i ) => {
                     console.log( game, i );
